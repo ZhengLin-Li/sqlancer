@@ -401,6 +401,7 @@ jobs:
         run: |
           docker pull stoneatom/stonedb
           docker run -p 3306:3306 -itd  -e MYSQL_ROOT_PASSWORD='123456'  stoneatom/stonedb
+          mysql -uroot -p123456 -e "CREATE USER sqlancer@localhost IDENTIFIED BY 'sqlancer';"
           docker ps
           ContainerID=$(docker ps --filter ancestor=stoneatom/stonedb --format "{{.ID}}") 
           docker exec $ContainerID bash
