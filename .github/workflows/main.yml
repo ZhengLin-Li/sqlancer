@@ -397,7 +397,7 @@ jobs:
           docker run -p 3306:3306 -itd  -e MYSQL_ROOT_PASSWORD='123456'  stoneatom/stonedb
           docker ps
           ContainerID=$(docker ps --filter expose=3306-3306 --format "{{.ID}}") 
-          $ContainerID
+          echo $ContainerID
           docker exec -it $ContainerID bash
           /opt/stonedb57/install/bin/mysql -usqlancer -psqlancer
       - name: Set up JDK 11
