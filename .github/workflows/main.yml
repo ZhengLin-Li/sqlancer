@@ -25,10 +25,7 @@ jobs:
           fetch-depth: 0
       - name: Set up StoneDB
         run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -H
           docker pull stoneatom/stonedb
           docker run -p 3306:3306 -itd  -e MYSQL_ROOT_PASSWORD='123456'  stoneatom/stonedb
           docker ps
