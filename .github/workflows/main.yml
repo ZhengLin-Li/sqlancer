@@ -25,9 +25,13 @@ jobs:
           fetch-depth: 0
       - name: Set up StoneDB
         run: |
+          echo "df -H"
           df -H
+          echo "docker pull stoneatom/stonedb"
           docker pull stoneatom/stonedb
+          echo "docker run -p 3306:3306 -itd  -e MYSQL_ROOT_PASSWORD='123456'  stoneatom/stonedb"
           docker run -p 3306:3306 -itd  -e MYSQL_ROOT_PASSWORD='123456'  stoneatom/stonedb
+          echo "docker ps"
           docker ps
           ContainerID=$(docker ps --filter ancestor=stoneatom/stonedb --format "{{.ID}}") 
           echo $ContainerID
