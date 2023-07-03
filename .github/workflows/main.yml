@@ -25,6 +25,10 @@ jobs:
           fetch-depth: 0
       - name: Set up StoneDB
         run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           echo "df -H"
           df -H
           echo "docker pull stoneatom/stonedb"
