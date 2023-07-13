@@ -50,6 +50,8 @@ public class StoneDBTableInsertGenerator extends AbstractInsertGenerator<StoneDB
     }
 
     private void addExpectedErrors() {
+        // java.sql.SQLException: Incorrect DATETIME value: '292278994-08-17 07:12:55'
+        errors.add("Incorrect DATETIME value: ");
         // com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Out of range value for column 'c0' at row
         errors.add("Data truncation: Out of range value for column ");
         // java.sql.SQLSyntaxErrorException: Unknown column 'c0' in 'field list'
