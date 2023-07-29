@@ -1,5 +1,7 @@
 package sqlancer.stonedb.gen;
 
+import static sqlancer.stonedb.StoneDBBugs.bug1942;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,6 +10,7 @@ import java.util.Set;
 
 import sqlancer.IgnoreMeException;
 import sqlancer.Randomly;
+import sqlancer.Randomly.StringGenerationStrategy;
 import sqlancer.common.ast.BinaryOperatorNode.Operator;
 import sqlancer.common.ast.newast.ColumnReferenceNode;
 import sqlancer.common.ast.newast.NewBetweenOperatorNode;
@@ -85,7 +88,9 @@ public class StoneDBExpressionGenerator extends UntypedExpressionGenerator<Node<
         case TIMESTAMP:
             return StoneDBConstant.createTimestampConstant(globalState.getRandomly().getInteger());
         case VARCHAR:
-            return StoneDBConstant.createTextConstant(globalState.getRandomly().getString());
+            StringGenerationStrategy strategy = StringGenerationStrategy.ALPHANUMERIC;
+            String str = strategy.getString(new Randomly());
+            return StoneDBConstant.createTextConstant(str);
         case DOUBLE:
             return StoneDBConstant.createDoubleConstant(globalState.getRandomly().getDouble());
         default:
@@ -119,7 +124,11 @@ public class StoneDBExpressionGenerator extends UntypedExpressionGenerator<Node<
             op = StoneDBUnaryPrefixOperator.getRandom();
             return new NewUnaryPrefixOperatorNode<>(generateExpression(depth + 1), op);
         case UNARY_POSTFIX:
-            op = StoneDBUnaryPostfixOperator.getRandom();
+            if (!bug1942) {
+                op = StoneDBUnaryPostfixOperator.getRandom();
+            } else {
+                op = StoneDBUnaryPostfixOperator.IS_NULL;
+            }
             return new NewUnaryPostfixOperatorNode<>(generateExpression(depth + 1), op);
         case BINARY_COMPARISON:
             op = StoneDBBinaryComparisonOperator.getRandom();
@@ -168,7 +177,7 @@ public class StoneDBExpressionGenerator extends UntypedExpressionGenerator<Node<
 
     // https://stonedb.io/docs/SQL-reference/functions/aggregate-functions/
     public enum StoneDBAggregateFunction {
-        MAX(1), MIN(1), AVG(1), COUNT(1), FIRST(1), SUM(1);
+        MAX(1), MIN(1), AVG(1), COUNT(1), SUM(1);
 
         private int nrArgs;
 
@@ -253,7 +262,7 @@ public class StoneDBExpressionGenerator extends UntypedExpressionGenerator<Node<
      */
     public enum StoneDBBinaryLogicalOperator implements Operator {
 
-        AND("AND"), OR("OR"), XOR("XOR");
+        AND("AND"), OR("OR");
 
         private final String textRepr;
 
@@ -300,7 +309,7 @@ public class StoneDBExpressionGenerator extends UntypedExpressionGenerator<Node<
      * Bitwise operators supported by StoneDB: https://stonedb.io/docs/SQL-reference/operators/bitwise-operators
      */
     public enum StoneDBBinaryBitwiseOperator implements Operator {
-        AND("&"), OR("|"), XOR("^"), LEFTSHIFT("<<"), RIGHTSHIFT(">>");
+        AND("&"), OR("|"), LEFTSHIFT("<<"), RIGHTSHIFT(">>");
 
         private final String textRepr;
 
