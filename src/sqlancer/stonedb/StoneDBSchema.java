@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import sqlancer.Randomly;
+import sqlancer.Randomly.StringGenerationStrategy;
 import sqlancer.SQLConnection;
 import sqlancer.common.ast.newast.Node;
 import sqlancer.common.schema.AbstractRelationalTable;
@@ -35,7 +36,7 @@ public class StoneDBSchema extends AbstractSchema<StoneDBProvider.StoneDBGlobalS
             return Randomly.fromOptions(values());
         }
 
-        public static Node<StoneDBExpression> getRandomValue(StoneDBDataType dataType) {
+        public static Node<StoneDBExpression> getRandomValue(StoneDBDataType dataType, Randomly r) {
             switch (dataType) {
             case TINYINT:
                 break;
@@ -70,7 +71,9 @@ public class StoneDBSchema extends AbstractSchema<StoneDBProvider.StoneDBGlobalS
             case TINYTEXT:
                 break;
             case TEXT:
-                return StoneDBConstant.createTextConstant(new Randomly().getString());
+                StringGenerationStrategy strategy = StringGenerationStrategy.ALPHANUMERIC;
+                String str = strategy.getString(r);
+                return StoneDBConstant.createTextConstant(str);
             case MEDIUMTEXT:
                 break;
             case LONGTEXT:
@@ -93,7 +96,7 @@ public class StoneDBSchema extends AbstractSchema<StoneDBProvider.StoneDBGlobalS
             return null;
         }
 
-        public static String getTypeAndValue(StoneDBDataType dataType) {
+        public static String getTypeAndValue(StoneDBDataType dataType, Randomly r) {
             StringBuilder sb = new StringBuilder();
             switch (dataType) {
             case TINYINT:
@@ -127,10 +130,10 @@ public class StoneDBSchema extends AbstractSchema<StoneDBProvider.StoneDBGlobalS
             case TIMESTAMP:
                 return "TIMESTAMP";
             case CHAR:
-                sb.append("CHAR").append(Randomly.fromOptions("", "(" + new Randomly().getInteger(0, 255) + ")"));
+                sb.append("CHAR").append(Randomly.fromOptions("", "(" + r.getInteger(0, 255) + ")"));
                 return sb.toString();
             case VARCHAR:
-                sb.append("VARCHAR").append("(").append(new Randomly().getInteger(0, 65535)).append(")");
+                sb.append("VARCHAR").append("(").append(r.getInteger(0, 65535)).append(")");
                 return sb.toString();
             case TINYTEXT:
                 return "TINYTEXT";
@@ -141,9 +144,10 @@ public class StoneDBSchema extends AbstractSchema<StoneDBProvider.StoneDBGlobalS
             case LONGTEXT:
                 return "LONGTEXT";
             case BINARY:
-                return "BINARY";
+                sb.append("BINARY").append("(").append(r.getInteger(0, 255)).append(")");
+                return sb.toString();
             case VARBINARY:
-                sb.append("VARBINARY").append("(").append(new Randomly().getInteger(0, 65535)).append(")");
+                sb.append("VARBINARY").append("(").append(r.getInteger(0, 65535)).append(")");
                 return sb.toString();
             case TINYBLOB:
                 return "TINYBLOB";
